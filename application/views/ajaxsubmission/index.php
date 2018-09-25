@@ -40,7 +40,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Form Submission</h1>
+        <h1>Ajax Submission, Asynchronous Uploads</h1>
         <form action="index" method="post" enctype='multipart/form-data'>
             <div class="form-group">
                 <label for="fullname">氏名</label>
@@ -56,6 +56,10 @@
                         uploadUrl: "<?php echo site_url()?>/ajaxsubmission/upload",
                         maxFileCount: 5,
                         overwriteInitial: false,
+                        initialPreviewAsData: true,
+                        <?php echo $fileinput_init['initialPreview']; ?>,
+                        <?php echo $fileinput_init['initialPreviewConfig']; ?>,
+
                     });
                 </script>
             </div>
