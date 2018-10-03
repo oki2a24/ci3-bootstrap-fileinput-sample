@@ -4,7 +4,7 @@ class AjaxSubmission extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->load->helper(array('url'));
+		$this->load->helper('url');
 	}
 
 	public function delete()
@@ -51,10 +51,6 @@ class AjaxSubmission extends CI_Controller {
 			return;
 		}
 
-		// $initial_preview = sprintf(
-		// 	'<img src="%1$s%2$s%3$s" class="file-preview-image" title="%3$s" alt="%3$s" style="width:auto;height:auto;max-width:100%%;max-height:100%%;">',
-		// 	base_url(), self::UPLOAD_PATH, $target_file['name']
-		// );
 		$initial_preview = sprintf(
 			'%1$s%2$s%3$s',
 			base_url(), self::UPLOAD_PATH, $target_file['name']
@@ -68,30 +64,16 @@ class AjaxSubmission extends CI_Controller {
 				'url' => sprintf('%1$s/ajaxsubmission/delete', site_url()),
 				'key' => $target_file['name'], 
 				'extra' => array(
-					'target_file' => $target_file
+					'target_file_name' => $target_file['name'],
 				)
-			)),
-			'append' => true,
-		));
+			))
+		), JSON_UNESCAPED_SLASHES);
 		$this->output->set_content_type('application/json', 'utf-8')->set_output($output);
 	}
 
 	public function index()
 	{
 		$this->load->helper('file');
-		// $filenames = get_filenames(self::UPLOAD_PATH);
-		// var_dump($filenames);
-		// $dir_file_info = get_dir_file_info(self::UPLOAD_PATH);
-		// var_dump($dir_file_info);
-		// foreach ($filenames as $f) {
-		// 	$mime_by_extension = get_mime_by_extension($f);
-		// 	var_dump($mime_by_extension);
-		// }
-		// foreach ($dir_file_info as $k => $v) {
-		// 	$mime_by_extension = get_mime_by_extension($k);
-		// 	var_dump($mime_by_extension);
-		// }
-
 		$initial_preview_json_array = [];
 		$initial_preview_config_json_array = [];
 		$dir_file_info = get_dir_file_info(self::UPLOAD_PATH);
@@ -106,84 +88,19 @@ class AjaxSubmission extends CI_Controller {
 				'url' => sprintf('%1$s/ajaxsubmission/delete', site_url()),
 				'key' => $file_name, 
 				'extra' => [
-					'target_file' => $file_name
+					'target_file_name' => $file_name
 				]
-
 			];
 		}
-		// var_dump($initial_preview_json_array);
-		// var_dump($initial_preview_config_json_array);
 		$initial_preview_json = json_encode($initial_preview_json_array, JSON_UNESCAPED_SLASHES);
-		// var_dump($initial_preview_json);
 		$initial_preview_config_json = json_encode($initial_preview_config_json_array, JSON_UNESCAPED_SLASHES);
-		// var_dump($initial_preview_config_json);
 
-
-
-		// $initial_preview_json = json_encode(array(
-		// 	sprintf('%1$s%2$s%3$s', base_url(), self::UPLOAD_PATH, 'Exif-Landscape-1.jpg'),
-		// 	sprintf('%1$s%2$s%3$s', base_url(), self::UPLOAD_PATH, 'Exif-Landscape-2.jpg'),
-		// 	sprintf('%1$s%2$s%3$s', base_url(), self::UPLOAD_PATH, 'Exif-Landscape-3.jpg')
-		// ), JSON_UNESCAPED_SLASHES);
-		// $initial_preview_config_json = json_encode(array(
-		// 	array(
-		// 		'filetype' => 'image/jpeg',
-		// 		'caption' => 'Exif-Landscape-1.jpg',
-		// 		'size' => 139435,
-		// 		'url' => sprintf('%1$s/ajaxsubmission/delete', site_url()),
-		// 		'key' => 'Exif-Landscape-1.jpg', 
-		// 		'extra' => array(
-		// 			'target_file' => 'Exif-Landscape-1.jpg'
-		// 		)
-		// 	),
-		// 	array(
-		// 		'filetype' => 'image/jpeg',
-		// 		'caption' => 'Exif-Landscape-2.jpg',
-		// 		'size' => 139435,
-		// 		'url' => sprintf('%1$s/ajaxsubmission/delete', site_url()),
-		// 		'key' => 'Exif-Landscape-2.jpg', 
-		// 		'extra' => array(
-		// 			'target_file' => 'Exif-Landscape-2.jpg'
-		// 		)
-		// 	),
-		// 	array(
-		// 		'filetype' => 'image/jpeg',
-		// 		'caption' => 'Exif-Landscape-3.jpg',
-		// 		'size' => 139435,
-		// 		'url' => sprintf('%1$s/ajaxsubmission/delete', site_url()),
-		// 		'key' => 'Exif-Landscape-3.jpg', 
-		// 		'extra' => array(
-		// 			'target_file' => 'Exif-Landscape-3.jpg'
-		// 		)
-		// 	),
-		// ), JSON_UNESCAPED_SLASHES);
-		// var_dump($initial_preview_config_json);
-		
-		$data = array(
-			// 'fileinput_init' => 'initialPreviewAsData: true,',
-			// 'fileinput_init' => '',
-			'fileinput_init' => array(
-				// 'initialPreviewAsData' => 'initialPreviewAsData: true,',
-				// 'initialPreviewAsData' => '',
-				// 'initialPreview' => 'initialPreview: ["http://localhost/ci3-bootstrap-fileinput-sample/./uploads/ajaxsubmission/Exif-Landscape-1.jpg"]',
+		$data = [
+			'fileinput_init' => [
 				'initialPreview' => 'initialPreview: ' . $initial_preview_json,
 				'initialPreviewConfig' => 'initialPreviewConfig: ' . $initial_preview_config_json,
-			),
-			// 'fileinput_init' => json_encode(array(
-			// 	'initialPreview' => array($initial_preview),
-				// 'initialPreviewConfig' => array(array(
-				// 	'filetype' => 'image/jpeg',
-				// 	'caption' => 'Exif-Landscape-1.jpg',
-				// 	'size' => 139435,
-				// 	'url' => sprintf('%1$s/ajaxsubmission/delete', site_url()),
-				// 	'key' => 'Exif-Landscape-1.jpg', 
-				// 	'extra' => array(
-				// 		'target_file' => 'Exif-Landscape-1.jpg'
-				// 	)
-				// )),
-			// 	'append' => true,
-			// )),
-		);
+			],
+		];
 		$this->load->view('ajaxsubmission/index', $data);
 	}
 }

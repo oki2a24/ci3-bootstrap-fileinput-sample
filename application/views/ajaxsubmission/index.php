@@ -58,13 +58,11 @@
                         overwriteInitial: false,
                         initialPreviewAsData: true,
                         <?php echo $fileinput_init['initialPreview']; ?>,
-                        <?php echo $fileinput_init['initialPreviewConfig']; ?>,
-
+                        <?php echo $fileinput_init['initialPreviewConfig']; ?>
                     });
                 </script>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="reset" class="btn btn-default">Reset</button>
         </form>
     </div>
 </body>
