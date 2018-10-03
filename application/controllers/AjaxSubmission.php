@@ -7,10 +7,19 @@ class AjaxSubmission extends CI_Controller {
 		$this->load->helper('url');
 	}
 
+	/**
+	 * ファイルを削除します。
+	 * ファイルは複数ではなく、1つのみ受け取ります。
+	 *
+	 * @return void
+	 */
 	public function delete()
 	{
 		$posted = $this->input->post();
+		// ファイル削除
 		$is_deleted = unlink(self::UPLOAD_PATH . $posted['key']);
+
+		// 結果のレスポンス
 		if (!$is_deleted) {
 			$this->output->set_content_type('application/json', 'utf-8')
 			->set_output(json_encode(array(
@@ -22,10 +31,16 @@ class AjaxSubmission extends CI_Controller {
 		->set_output('{}');
 	}
 
+	/**
+	 * ファイルをアップロードします。
+	 * ファイルは複数ではなく、1つのみ受け取ります。
+	 *
+	 * @return void
+	 */
 	public function upload()
 	{
+		// 受け取ったファイルをアップロードできるように調整
 		$upload_files = $_FILES['kartik-input-700'];
-
 		$this->load->helper('security');
 		$sanitized_filename = sanitize_filename($upload_files['name'][0]);
 		$_FILES['target_file'] = array(
@@ -37,6 +52,7 @@ class AjaxSubmission extends CI_Controller {
 		);
 		$target_file = $_FILES['target_file'];
 
+		// ファイルアップロード
 		$config = array(
 			'upload_path' => self::UPLOAD_PATH,
 			'allowed_types' => 'gif|jpg|png|pdf|mp4',
@@ -51,6 +67,7 @@ class AjaxSubmission extends CI_Controller {
 			return;
 		}
 
+		// アップロードしたファイルの情報から HTML へ渡すデータを生成し、レスポンス
 		$initial_preview = sprintf(
 			'%1$s%2$s%3$s',
 			base_url(), self::UPLOAD_PATH, $target_file['name']
@@ -71,12 +88,20 @@ class AjaxSubmission extends CI_Controller {
 		$this->output->set_content_type('application/json', 'utf-8')->set_output($output);
 	}
 
+	/**
+	 * ページ初期表示時
+	 *
+	 * @return void
+	 */
 	public function index()
 	{
+		// サーバのファイル情報を取得
 		$this->load->helper('file');
+		$dir_file_info = get_dir_file_info(self::UPLOAD_PATH);
+
+		// HTML に渡す initialPreview オプション、initialPreviewConfig オプションデータ生成
 		$initial_preview_json_array = [];
 		$initial_preview_config_json_array = [];
-		$dir_file_info = get_dir_file_info(self::UPLOAD_PATH);
 		foreach ($dir_file_info as $file_name => $v) {
 			$initial_preview_json_array[] = sprintf('%1$s%2$s%3$s', base_url(), self::UPLOAD_PATH, $file_name);
 
@@ -95,6 +120,7 @@ class AjaxSubmission extends CI_Controller {
 		$initial_preview_json = json_encode($initial_preview_json_array, JSON_UNESCAPED_SLASHES);
 		$initial_preview_config_json = json_encode($initial_preview_config_json_array, JSON_UNESCAPED_SLASHES);
 
+		// HTML へ渡すデータ組み立て、レスポンス
 		$data = [
 			'fileinput_init' => [
 				'initialPreview' => 'initialPreview: ' . $initial_preview_json,
